@@ -149,6 +149,9 @@ namespace SoftITOFlix.Controllers
             SoftITOFlixUser applicationUser = _signInManager.UserManager.FindByNameAsync(logInModel.UserName).Result;
             List<Media>? medias = null;
             IQueryable<UserFavorite> userFavorites;
+            IGrouping<short, MediaCategory>? mediaCategories;
+            IQueryable<Media> mediaQuery;
+            IQueryable<int> userWatcheds;
 
             if (applicationUser == null)
             {
@@ -169,7 +172,13 @@ namespace SoftITOFlix.Controllers
                 userFavorites = _context.UserFavorites.Where(u => u.UserId == applicationUser.Id);
                 userFavorites = userFavorites.Include(u => u.Media);
                 userFavorites = userFavorites.Include(u => u.Media!.MediaCategories);
-                userFavorites.SelectMany(u => u.Media!.MediaCategories!).GroupBy(m => m.CategoryId).OrderByDescending(m => m.Count()).FirstOrDefault();
+                mediaCategories = userFavorites.SelectMany(u => u.Media!.MediaCategories!).GroupBy(m => m.CategoryId).OrderByDescending(m => m.Count()).FirstOrDefault();
+                if (mediaCategories != null)
+                {
+                    userWatcheds = _context.UserWatcheds.Where(u => u.UserId == applicationUser.Id).Include(u => u.Episode).Select(u => u.Episode!.MediaId).Distinct();
+                    mediaQuery = _context.Medias.Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)).Where(m => userWatcheds.Contains(m.Id) == false);
+                    
+                }
                 //Populate medias
             }
             return medias;
