@@ -13,7 +13,7 @@ namespace SoftITOFlix
             builder.Services.AddDbContext<SoftITOFlixContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SoftITOFlixContext") ?? throw new InvalidOperationException("Connection string 'SoftITOFlixContext' not found.")));
 
-                        builder.Services.AddDefaultIdentity<SoftITOFlixUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                        builder.Services.AddDefaultIdentity<SoftITOFlixUser>()
                 .AddEntityFrameworkStores<SoftITOFlixContext>();
 
             // Add services to the container.

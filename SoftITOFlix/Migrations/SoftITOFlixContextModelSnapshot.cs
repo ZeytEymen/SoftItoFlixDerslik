@@ -144,7 +144,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.Director", b =>
@@ -162,7 +162,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Directors", (string)null);
+                    b.ToTable("Directors");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.Episode", b =>
@@ -205,9 +205,10 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaId", "SeasonNumber", "EpisodeNumber")
+                        .IsUnique();
 
-                    b.ToTable("Episodes", (string)null);
+                    b.ToTable("Episodes");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.Media", b =>
@@ -235,7 +236,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Medias", (string)null);
+                    b.ToTable("Medias");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.MediaCategory", b =>
@@ -250,7 +251,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("MediaCategories", (string)null);
+                    b.ToTable("MediaCategories");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.MediaDirector", b =>
@@ -265,7 +266,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("DirectorId");
 
-                    b.ToTable("MediaDirectors", (string)null);
+                    b.ToTable("MediaDirectors");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.MediaRestriction", b =>
@@ -280,7 +281,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("RestrictionId");
 
-                    b.ToTable("MediaRestrictions", (string)null);
+                    b.ToTable("MediaRestrictions");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.MediaStar", b =>
@@ -295,7 +296,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("StarId");
 
-                    b.ToTable("MediaStars", (string)null);
+                    b.ToTable("MediaStars");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.Plan", b =>
@@ -321,7 +322,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Plans", (string)null);
+                    b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.Restriction", b =>
@@ -336,7 +337,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Restrictions", (string)null);
+                    b.ToTable("Restrictions");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.SoftITOFlixRole", b =>
@@ -463,7 +464,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stars", (string)null);
+                    b.ToTable("Stars");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.UserFavorite", b =>
@@ -478,7 +479,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("MediaId");
 
-                    b.ToTable("UserFavorites", (string)null);
+                    b.ToTable("UserFavorites");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.UserPlan", b =>
@@ -507,7 +508,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPlans", (string)null);
+                    b.ToTable("UserPlans");
                 });
 
             modelBuilder.Entity("SoftITOFlix.Models.UserWatched", b =>
@@ -522,7 +523,7 @@ namespace SoftITOFlix.Migrations
 
                     b.HasIndex("EpisodeId");
 
-                    b.ToTable("UserWatcheds", (string)null);
+                    b.ToTable("UserWatcheds");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
