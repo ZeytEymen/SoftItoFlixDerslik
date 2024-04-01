@@ -92,7 +92,6 @@ namespace SoftITOFlix.Controllers
                 return NotFound();
             }
             user.PhoneNumber = softITOFlixUser.PhoneNumber;
-            user.UserName = softITOFlixUser.UserName;
             user.BirthDate = softITOFlixUser.BirthDate;
             user.Email = softITOFlixUser.Email;
             user.Name = softITOFlixUser.Name;
@@ -144,10 +143,12 @@ namespace SoftITOFlix.Controllers
         }
 
         [HttpPost("LogIn")]
-        public ActionResult<bool> LogIn(LogInModel logInModel)
+        public ActionResult<List<Media>?> LogIn(LogInModel logInModel)
         {
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
             SoftITOFlixUser applicationUser = _signInManager.UserManager.FindByNameAsync(logInModel.UserName).Result;
+            List<Media>? medias = null;
+            IQueryable<UserFavorite> userFavorites;
 
             if (applicationUser == null)
             {
@@ -163,7 +164,15 @@ namespace SoftITOFlix.Controllers
                 return Content("Passive");
             }
             signInResult = _signInManager.PasswordSignInAsync(applicationUser, logInModel.Password, false, false).Result;
-            return signInResult.Succeeded;
+            if (signInResult.Succeeded == true)
+            {
+                userFavorites = _context.UserFavorites.Where(u => u.UserId == applicationUser.Id);
+                userFavorites = userFavorites.Include(u => u.Media);
+                userFavorites = userFavorites.Include(u => u.Media!.MediaCategories);
+                userFavorites.SelectMany(u => u.Media!.MediaCategories!).GroupBy(m => m.CategoryId).OrderByDescending(m => m.Count()).FirstOrDefault();
+                //Populate medias
+            }
+            return medias;
         }
     }
 }

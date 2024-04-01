@@ -53,6 +53,11 @@ namespace SoftITOFlix.Controllers
         [Authorize]
         public void Watch(long id)
         {
+            //Find logged in user.
+            //Check age
+            //If age is less than 18
+            //Get media restrictions via episode
+            //Check if the user is permitted to view the episode
             UserWatched userWatched = new UserWatched();
             Episode episode = _context.Episodes.Find(id)!;
 
@@ -106,6 +111,7 @@ namespace SoftITOFlix.Controllers
         [HttpPost]
         public async Task<ActionResult<Episode>> PostEpisode(Episode episode)
         {
+            episode.ViewCount = 0;
           if (_context.Episodes == null)
           {
               return Problem("Entity set 'SoftITOFlixContext.Episodes'  is null.");

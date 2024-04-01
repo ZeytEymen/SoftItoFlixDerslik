@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 using Microsoft.EntityFrameworkCore;
 using SoftITOFlix.Data;
 using SoftITOFlix.Models;
+using System.Net.Http;
 
 namespace SoftITOFlix.Controllers
 {
@@ -20,6 +22,14 @@ namespace SoftITOFlix.Controllers
         public CategoriesController(SoftITOFlixContext context)
         {
             _context = context;
+        }
+
+        [HttpGet("IMDB")]
+        public string IMDB(string title)
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("authorization", "apikey 1ESZpNKxD3uKoCpGTVIItJ:3JXkM32N2EDyLaOj5Q00K9");
+            return httpClient.GetStringAsync("https://api.collectapi.com/imdb/imdbSearchByName?query="+title).Result;
         }
 
         // GET: api/Categories
