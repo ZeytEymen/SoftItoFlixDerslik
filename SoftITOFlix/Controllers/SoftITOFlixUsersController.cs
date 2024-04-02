@@ -148,7 +148,7 @@ namespace SoftITOFlix.Controllers
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
             SoftITOFlixUser applicationUser = _signInManager.UserManager.FindByNameAsync(logInModel.UserName).Result;
             List<Media>? medias = null;
-            IQueryable<UserFavorite> userFavorites;
+            List<UserFavorite> userFavorites;
             IGrouping<short, MediaCategory>? mediaCategories;
             IQueryable<Media> mediaQuery;
             IQueryable<int> userWatcheds;
@@ -169,15 +169,12 @@ namespace SoftITOFlix.Controllers
             signInResult = _signInManager.PasswordSignInAsync(applicationUser, logInModel.Password, false, false).Result;
             if (signInResult.Succeeded == true)
             {
-                userFavorites = _context.UserFavorites.Where(u => u.UserId == applicationUser.Id);
-                userFavorites = userFavorites.Include(u => u.Media);
-                userFavorites = userFavorites.Include(u => u.Media!.MediaCategories);
-                List<UserFavorite> favorites = userFavorites.ToList();
-                mediaCategories = userFavorites.ToList().SelectMany(u => u.Media!.MediaCategories!).GroupBy(m => m.CategoryId).OrderByDescending(m => m.Count()).FirstOrDefault();
+                userFavorites = _context.UserFavorites.Where(u => u.UserId == applicationUser.Id).Include(u => u.Media).Include(u => u.Media!.MediaCategories).ToList();
+                mediaCategories = userFavorites.SelectMany(u => u.Media!.MediaCategories!).GroupBy(m => m.CategoryId).OrderByDescending(m => m.Count()).FirstOrDefault();
                 if (mediaCategories != null)
                 {
                     userWatcheds = _context.UserWatcheds.Where(u => u.UserId == applicationUser.Id).Include(u => u.Episode).Select(u => u.Episode!.MediaId).Distinct();
-                    mediaQuery = _context.Medias.Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)).Where(m=>m.MediaCategories!=null).Where(m => userWatcheds.Contains(m.Id) == false);
+                    mediaQuery = _context.Medias.Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)).Where(m => m.MediaCategories!.Count > 0 && userWatcheds.Contains(m.Id) == false);
                     if(applicationUser.Restriction!=null)
                     {
                         mediaQuery = mediaQuery.Include(m => m.MediaRestrictions!.Where(r => r.RestrictionId <= applicationUser.Restriction));
