@@ -169,14 +169,29 @@ namespace SoftITOFlix.Controllers
             signInResult = _signInManager.PasswordSignInAsync(applicationUser, logInModel.Password, false, false).Result;
             if (signInResult.Succeeded == true)
             {
+                //Kullanıcının favori olarak işaretlediği mediaları ve kategorilerini alıyoruz.
                 userFavorites = _context.UserFavorites.Where(u => u.UserId == applicationUser.Id).Include(u => u.Media).Include(u => u.Media!.MediaCategories).ToList();
+                //userFavorites içindeki media kategorilerini ayıklıyoruz (SelectMany)
+                //Bunları kategori id'lerine göre grupluyoruz (GroupBy)
+                //Her grupta kaç adet item olduğuna bakıp (m.Count())
+                //Çoktan aza doğru sıralıyoruz (OrderByDescending)
+                //En üstteki, yani en çok item'a sahip grubu seçiyoruz (FirstOrDefault)
                 mediaCategories = userFavorites.SelectMany(u => u.Media!.MediaCategories!).GroupBy(m => m.CategoryId).OrderByDescending(m => m.Count()).FirstOrDefault();
                 if (mediaCategories != null)
                 {
+                    //Kullabıcının izlediği episode'lardan media'ya ulaşıp, sadece media id'lerini alıyoruz (Select)
+                    //Tekrar eden media id'leri eliyoruz (Distinct)
                     userWatcheds = _context.UserWatcheds.Where(u => u.UserId == applicationUser.Id).Include(u => u.Episode).Select(u => u.Episode!.MediaId).Distinct();
+                    //Öneri yapmak için mediaCategories.Key'i yani kullanıcının en çok favorilediği kategori id'sini kullanıyoruz
+                    //Media listesini çekerken sadece bu kategoriye ait mediaların MediaCategories listesini dolduruyoruz (Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)))
+                    //Diğer mediaların MediaCategories listeleri boş kalıyor
+                    //Sonrasında MediaCategories'i boş olmayan media'ları filtreliyoruz (m.MediaCategories!.Count > 0)
+                    //Ayrıca bu kategoriye giren fakat kullanıcının izlemiş olduklarını da dışarıda bırakıyoruz (userWatcheds.Contains(m.Id) == false)
                     mediaQuery = _context.Medias.Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)).Where(m => m.MediaCategories!.Count > 0 && userWatcheds.Contains(m.Id) == false);
                     if(applicationUser.Restriction!=null)
                     {
+                        //TO DO
+                        //Son olarak, kullanıcı bir restrictiona sahipse seçilen media içerisinden bunları da çıkarmamız gerekiyor.
                         mediaQuery = mediaQuery.Include(m => m.MediaRestrictions!.Where(r => r.RestrictionId <= applicationUser.Restriction));
                     }
                     medias = mediaQuery.ToList();
