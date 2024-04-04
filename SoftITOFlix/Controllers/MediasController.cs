@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using SoftITOFlix.Data;
 using SoftITOFlix.Models;
 
@@ -34,7 +35,7 @@ namespace SoftITOFlix.Controllers
 
         // GET: api/Medias/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Media>> GetMedia(int id)
+        public async Task<ActionResult<Media>> GetMedia(int id, bool withLinks)
         {
           if (_context.Medias == null)
           {

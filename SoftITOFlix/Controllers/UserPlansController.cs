@@ -94,6 +94,8 @@ namespace SoftITOFlix.Controllers
 
                 //userPlan.UserId=Find from UserManager with EMail
                 userPlan.PlanId = planId;
+                userPlan.StartDate = DateTime.Today;
+                userPlan.EndDate = userPlan.StartDate.AddMonths(1);
                 _context.UserPlans.Add(userPlan);
                 _context.SaveChanges();
             }

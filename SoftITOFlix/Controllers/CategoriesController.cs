@@ -11,6 +11,7 @@ using SoftITOFlix.Data;
 using SoftITOFlix.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using NuGet.Protocol;
 
 namespace SoftITOFlix.Controllers
 {
@@ -21,15 +22,15 @@ namespace SoftITOFlix.Controllers
         public class ResultStruct
         {
             public string Title { get; set; } = "";
-            public short Year { get; set; }
+            public string Year { get; set; } = "";
             public string ImdbId { get; set; } = "";
             public string Type { get; set; } = "";
             public string Poster { get; set; } = "";
         }
         public struct IMDBNameResult
         {
-            bool Success { get; set; }
-            //List<ResultStruct> Result { get; set; }
+            public bool Success { get; set; }
+            public List<ResultStruct> Result { get; set; }
         }
         private readonly SoftITOFlixContext _context;
 
@@ -44,13 +45,7 @@ namespace SoftITOFlix.Controllers
             
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("authorization", "apikey 1ESZpNKxD3uKoCpGTVIItJ:3JXkM32N2EDyLaOj5Q00K9");
-            
-            HttpResponseMessage httpResponseMessage = httpClient.GetAsync("https://api.collectapi.com/imdb/imdbSearchByName?query=" + title).Result;
-            string iMDBNameResult = httpResponseMessage.Content.ReadAsStringAsync().Result;
-            JsonSerializer jsonSerializer = new JsonSerializer();
-            object? nameResult = JsonConvert.DeserializeObject(iMDBNameResult);
-            
-            return (IMDBNameResult)nameResult!;
+            return httpClient.GetFromJsonAsync<IMDBNameResult>("https://api.collectapi.com/imdb/imdbSearchByName?query=" + title).Result;
         }
 
         // GET: api/Categories
